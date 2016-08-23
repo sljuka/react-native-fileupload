@@ -17,6 +17,7 @@ import java.net.URL;
 import java.io.DataOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.UUID;
 
 import com.facebook.react.bridge.WritableMap;
 import java.io.FileInputStream;
@@ -38,7 +39,7 @@ public class FileUploadModule extends ReactContextBaseJavaModule {
     public void upload(final ReadableMap options, final Callback callback) {
         String lineEnd = "\r\n";
         String twoHyphens = "--";
-        String boundary =  "*****";
+        String boundary =  UUID.randomUUID().toString();
 
         String uploadUrl = options.getString("uploadUrl");
         String method;
@@ -109,11 +110,12 @@ public class FileUploadModule extends ReactContextBaseJavaModule {
                 ReadableMap file = files.getMap(i);
                 String filename = file.getString("filename");
                 String filepath = file.getString("filepath");
+                String parameterName = file.getString("name");
                 filepath = filepath.replace("file://", "");
                 fileInputStream = new FileInputStream(filepath);
 
                 outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                outputStream.writeBytes("Content-Disposition: form-data; name=\"image\";filename=\"" + filename + "\"" + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\";filename=\"" + filename + "\"" + lineEnd);
                 outputStream.writeBytes(lineEnd);
 
                 bytesAvailable = fileInputStream.available();
